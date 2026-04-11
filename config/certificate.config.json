@@ -2,7 +2,8 @@
   "org_name": "Github Copilot Dev Days 2026 - Hyderabad",
   "org_tagline": "Learn. Build. Grow.",
   "org_website": "https://srisatyalokesh.is-a.dev/certificates",
-  "logo_url": "assets/images/copilot.png",
+  "logo_url": "assets/images/logo.png",
+  "show_org_name": false,
 
   "primary_color": "#1a2e4a",
   "secondary_color": "#c8a951",
@@ -18,15 +19,15 @@
   "font_body": "'Lato', 'Helvetica Neue', sans-serif",
 
   "certificate_title": "Certificate of Participation",
+  "event_title": "GitHub Copilot Dev Days 2026 - Hyderabad | Learn AI",
   "pre_name_text": "This is to certify that",
-  "post_name_text": "has successfully completed the Github Copilot Dev Days 2026 - Hyderabad workshop",
+  "post_name_text": "has successfully completed the hands-on workshop at",
   "issued_by_label": "Authorized By",
-  "date_label": "Date of Completion",
-  "id_label": "Certificate ID",
+  "date_label": "Date",
   "signature_name": "Satya K",
   "signature_title": "Lead Engineer & Technical Architect",
 
-  "seal_label": "Certified",
+  "seal_label": "Verified Credential",
   "show_qr": true,
   "show_description": true,
   "show_seal": true,
@@ -35,7 +36,7 @@
   "search_subtext": "Enter the email address you used to register.",
   "search_placeholder": "your@email.com",
   "search_button": "Find My Certificate",
-  "search_footer_note": "Can't find yours? Contact us at hello@example.com",
+  "search_footer_note": "Can't find yours? Contact us at srisatyalokesh2.12@gmail.com",
 
   "pdf_filename_prefix": "certificate",
   "pdf_format": "a4",

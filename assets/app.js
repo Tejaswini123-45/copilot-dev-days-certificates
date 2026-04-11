@@ -85,11 +85,11 @@ function setImageGraceful(id, src) {
   var el = document.getElementById(id);
   if (!el) return;
   if (!src) {
-    el.style.display = 'none';
+    el.classList.add('hidden');
     return;
   }
   el.onerror = function () {
-    this.style.display = 'none';
+    this.classList.add('hidden');
   };
   el.src = src;
 }
@@ -101,7 +101,16 @@ function setImageGraceful(id, src) {
 function renderCertificateView(config, attendee, id) {
   // Org header
   var orgNameEl = document.getElementById('cert-org-name');
-  if (orgNameEl) orgNameEl.textContent = config.org_name || '';
+  if (orgNameEl) {
+    orgNameEl.textContent = config.org_name || '';
+    orgNameEl.classList.toggle('hidden', !config.show_org_name);
+  }
+
+  var eventTitleEl = document.getElementById('cert-event-title');
+  if (eventTitleEl) {
+    eventTitleEl.textContent = config.event_title || '';
+    eventTitleEl.classList.toggle('hidden', !config.event_title);
+  }
 
   setImageGraceful('cert-logo', config.logo_url);
   var logoEl = document.getElementById('cert-logo');
@@ -156,7 +165,7 @@ function renderCertificateView(config, attendee, id) {
   // Footer: seal (hidden if show_seal === false or seal_url missing)
   if (config.show_seal === false) {
     var sealEl = document.getElementById('cert-seal');
-    if (sealEl) sealEl.style.display = 'none';
+    if (sealEl) sealEl.classList.add('hidden');
   } else {
     setImageGraceful('cert-seal', config.seal_url);
   }
@@ -178,7 +187,7 @@ function renderCertificateView(config, attendee, id) {
     generateQR(config, id);
   } else {
     var qrEl = document.getElementById('cert-qr');
-    if (qrEl) qrEl.parentNode.style.display = 'none';
+    if (qrEl) qrEl.parentNode.classList.add('hidden');
   }
 }
 
@@ -209,18 +218,19 @@ function wirePDFButton(config, certId) {
   var btn = document.getElementById('download-btn');
   if (!btn) return;
 
+  var originalHTML = btn.innerHTML;
+
   btn.addEventListener('click', function () {
     if (typeof html2pdf === 'undefined') {
       alert('PDF library is still loading. Please try again in a moment.');
       return;
     }
-    // Disable button during generation
     btn.disabled = true;
-    btn.textContent = 'Generating...';
+    btn.textContent = 'Generating…';
 
     var element = document.getElementById('certificate');
     var noPrint = document.querySelectorAll('.no-print');
-    noPrint.forEach(function (el) { el.style.visibility = 'hidden'; });
+    noPrint.forEach(function (el) { el.classList.add('invisible'); });
 
     var opt = {
       margin:      config.pdf_margin != null ? config.pdf_margin : 0,
@@ -235,9 +245,9 @@ function wirePDFButton(config, certId) {
     };
 
     html2pdf().set(opt).from(element).save().then(function () {
-      noPrint.forEach(function (el) { el.style.visibility = 'visible'; });
+      noPrint.forEach(function (el) { el.classList.remove('invisible'); });
       btn.disabled = false;
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF';
+      btn.innerHTML = originalHTML;
     });
   });
 }
@@ -249,9 +259,12 @@ function renderSearchView(config) {
   if (logoEl) {
     logoEl.src = config.logo_url || '';
     logoEl.alt = config.org_name || '';
-    if (!config.logo_url) logoEl.style.display = 'none';
-    logoEl.onerror = function () { this.style.display = 'none'; };
+    if (!config.logo_url) logoEl.classList.add('hidden');
+    logoEl.onerror = function () { this.classList.add('hidden'); };
   }
+
+  var orgNameEl = document.getElementById('search-org-name');
+  if (orgNameEl) orgNameEl.textContent = config.org_name || '';
 
   var headlineEl = document.getElementById('search-headline');
   if (headlineEl) headlineEl.textContent = config.search_headline || config.org_name || '';
@@ -276,16 +289,6 @@ function renderSearchView(config) {
   });
 }
 
-function sanitizeEmail(email) {
-  return email
-    .toLowerCase()
-    .trim()
-    .replace(/\+/g, '-plus-')
-    .replace(/@/g, '-at-')
-    .replace(/\./g, '-')
-    .replace(/[^a-z0-9\-]/g, '');
-}
-
 function handleSearch() {
   var input = document.getElementById('lookup-input');
   if (!input) return;
@@ -294,7 +297,7 @@ function handleSearch() {
     input.focus();
     return;
   }
-  var id = value.indexOf('@') !== -1 ? sanitizeEmail(value) : sanitizeId(value);
+  var id = sanitizeId(value);
   window.location.href = '?id=' + encodeURIComponent(id);
 }
 
@@ -384,6 +387,12 @@ function showError(id) {
       detailEl.textContent = 'We could not find a certificate for: ' + id;
       detailEl.classList.remove('hidden');
     }
+  }
+  var retryBtn = document.getElementById('retry-btn');
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function () {
+      window.location.href = window.location.pathname;
+    });
   }
   showView('error-view');
 }
