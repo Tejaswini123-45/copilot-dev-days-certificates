@@ -46,3 +46,30 @@ function applyConfigVars(config) {
   if (config.seal_url)      r.setProperty('--seal-url',      `url(${config.seal_url})`);
   if (config.signature_url) r.setProperty('--signature-url', `url(${config.signature_url})`);
 }
+
+// === SPA View System ===
+
+function showView(activeId) {
+  const viewIds = ['loading-view', 'search-view', 'certificate-view', 'error-view'];
+  viewIds.forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', id !== activeId);
+  });
+}
+
+// === URL Utilities ===
+
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+function sanitizeId(email) {
+  return email
+    .toLowerCase()
+    .trim()
+    .replace(/\+/g, '-plus-')
+    .replace(/@/g, '-at-')
+    .replace(/\./g, '-')
+    .replace(/[^a-z0-9\-]/g, '');
+}
