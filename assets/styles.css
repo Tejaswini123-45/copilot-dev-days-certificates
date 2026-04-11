@@ -85,3 +85,242 @@ body {
   margin: 0;
   max-width: 400px;
 }
+
+/* ========================================
+   CERTIFICATE CARD
+   ======================================== */
+
+/* Centers the certificate card on-screen */
+.certificate-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  max-width: 1050px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* A4 landscape proportions on screen (297mm x 210mm) */
+.certificate {
+  width: 100%;
+  aspect-ratio: 297 / 210;
+  background: var(--background-color);
+  border: var(--border-width) double var(--border-color);
+  font-family: var(--font-body);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Header: org logo above org name, centered */
+.cert-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.cert-logo {
+  max-height: 60px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.cert-org-name {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+/* Title block: ornament line -- heading label -- ornament line */
+.cert-title-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cert-ornament-line {
+  flex: 1;
+  height: 1px;
+  background: var(--secondary-color);
+}
+
+.cert-heading-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--primary-color);
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* Body: pre-name text, recipient name, post-name, workshop, description */
+.cert-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.cert-pre-name-text,
+.cert-post-name-text {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.cert-name {
+  font-family: var(--font-heading);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 4px 0;
+  line-height: 1.2;
+}
+
+.cert-workshop {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--primary-color);
+  margin: 4px 0 0;
+}
+
+.cert-description {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--text-color);
+  max-width: 60%;
+  text-align: center;
+  font-style: italic;
+  margin: 4px 0 0;
+}
+
+/* Footer: date left, seal center, signature right */
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 16px;
+}
+
+.cert-footer-left,
+.cert-footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.cert-footer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cert-date {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.cert-seal {
+  max-height: 80px;
+  max-width: 80px;
+  object-fit: contain;
+}
+
+.cert-signature {
+  max-height: 60px;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.cert-authorized-name {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.cert-footer-label {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-color);
+}
+
+/* Bottom row: certificate ID muted text */
+.cert-bottom-row {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.cert-id-label {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  color: var(--muted-color);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ========================================
+   PRINT / PDF (A4 Landscape)
+   ======================================== */
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    background: white;
+  }
+
+  /* Hide all views except certificate during print */
+  .view {
+    display: none !important;
+  }
+
+  #certificate-view {
+    display: flex !important;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .certificate-wrapper {
+    padding: 0;
+    max-width: none;
+  }
+
+  /* Override screen aspect-ratio with exact physical dimensions */
+  .certificate {
+    width: 297mm;
+    height: 210mm;
+    aspect-ratio: auto;
+    padding: 14mm 20mm;
+    box-shadow: none;
+  }
+}
