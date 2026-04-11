@@ -20,12 +20,14 @@
 **Depends on:** Nothing
 **Requirements:** APP-03, APP-04, CFG-01, CFG-02, CFG-03, CFG-04, DATA-01, DATA-02, CONTRIB-01
 
-**Plans:**
-1. repo-scaffold: `index.html` skeleton with CDN script tags, directory structure (`config/`, `data/`, `assets/`), CSS reset
-2. config-schema: `config/certificate.config.json` with all required fields; JS config loader (fetch + JSON parse + shape validation)
-3. css-variables: Dynamic `:root` CSS variable injection from config via `document.documentElement.style.setProperty`
-4. spa-shell: URL query-param parser, app state object, view switcher (loading → search | certificate | error), loading indicator render
-5. data-convention: `/data/sample.json` with all required attendee fields following email-to-ID naming convention
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-repo-scaffold-PLAN.md — `index.html` shell, CDN script tags, directory skeleton, CSS reset, JS stub
+- [ ] 01-02-config-schema-PLAN.md — `config/certificate.config.json` full flat schema; `fetchConfig()` and `validateConfig()` in app.js
+- [ ] 01-03-css-variables-PLAN.md — `applyConfigVars()` in app.js; `:root` CSS variables, spinner, and error styles in styles.css
+- [ ] 01-04-spa-shell-PLAN.md — `init()`, `showView()`, `getQueryParam()`, `sanitizeId()` completing the SPA bootstrap
+- [ ] 01-05-data-convention-PLAN.md — `data/sample.json` with all attendee fields following email-sanitized ID convention
 
 **Success Criteria:**
 1. Opening `index.html` shows a loading indicator while config fetches, then transitions to the correct view — no blank screen or JS errors in console
