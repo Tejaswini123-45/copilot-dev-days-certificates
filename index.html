@@ -4,6 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workshop Certificate</title>
+
+  <!-- SEO: base tags (updated by JS in certificate mode) -->
+  <meta name="description" content="View and download your workshop completion certificate.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" id="canonical-tag" href="">
+
+  <!-- SEO: Open Graph (social sharing) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="" id="og-title">
+  <meta property="og:description" content="" id="og-description">
+  <meta property="og:url" content="" id="og-url">
+  <meta property="og:image" content="" id="og-image">
+  <meta property="og:site_name" content="" id="og-site-name">
+
+  <!-- SEO: Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="" id="tw-title">
+  <meta name="twitter:description" content="" id="tw-description">
+  <meta name="twitter:image" content="" id="tw-image">
+  <meta name="twitter:site" content="" id="tw-site">
+
+  <!-- AEO: JSON-LD structured data placeholder (populated by JS) -->
+  <script type="application/ld+json" id="json-ld-block">{}</script>
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,14 +46,45 @@
     <div class="loading-spinner" role="status" aria-label="Loading"></div>
   </div>
 
-  <!-- SEARCH: empty — filled by JS in Phase 04 -->
+  <!-- SEARCH: landing page — filled by renderSearchView() -->
   <div id="search-view" class="view hidden">
+    <div class="search-container">
+      <img id="search-logo" src="" alt="" class="search-logo" />
+      <h1 id="search-headline" class="search-headline"></h1>
+      <p id="search-subtext" class="search-subtext"></p>
+      <div class="search-form" role="search">
+        <label for="lookup-input" class="search-label" id="search-label">Email address</label>
+        <input
+          type="email"
+          id="lookup-input"
+          class="search-input"
+          placeholder=""
+          autocomplete="email"
+          inputmode="email"
+          aria-label="Enter your registered email address"
+        />
+        <button id="lookup-btn" class="search-btn" type="button"></button>
+      </div>
+      <p id="search-footer-note" class="search-footer-note"></p>
+    </div>
   </div>
 
-  <!-- CERTIFICATE: filled by renderCertificateView() in Phase 02 -->
+  <!-- CERTIFICATE: filled by renderCertificateView() -->
   <div id="certificate-view" class="view hidden">
+    <!-- Action bar: Download PDF + Print buttons (hidden in print/PDF) -->
+    <div class="action-bar no-print" id="action-bar" role="toolbar" aria-label="Certificate actions">
+      <button id="download-btn" class="btn btn-primary" type="button" aria-label="Download certificate as PDF">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+      <button id="print-btn" class="btn btn-secondary" type="button" onclick="window.print()" aria-label="Print certificate">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+    </div>
     <div class="certificate-wrapper">
-      <div class="certificate" id="certificate">
+      <div class="certificate" id="certificate"
+           itemscope itemtype="https://schema.org/EducationalOccupationalCredential">
 
         <div class="cert-corner cert-corner-tl" aria-hidden="true"></div>
         <div class="cert-corner cert-corner-tr" aria-hidden="true"></div>
@@ -50,10 +104,12 @@
 
         <div class="cert-body">
           <p class="cert-pre-name-text" id="cert-pre-name-text"></p>
-          <h1 class="cert-name" id="cert-name"></h1>
+        <h1 class="cert-name" id="cert-name" itemprop="about" itemscope itemtype="https://schema.org/Person">
+          <span itemprop="name"></span>
+        </h1>
           <p class="cert-post-name-text" id="cert-post-name-text"></p>
-          <h2 class="cert-workshop" id="cert-workshop"></h2>
-          <p class="cert-description hidden" id="cert-description"></p>
+          <h2 class="cert-workshop" id="cert-workshop" itemprop="name"></h2>
+          <p class="cert-description hidden" id="cert-description" itemprop="description"></p>
           <div class="cert-qr-section" id="cert-qr-section">
             <div id="cert-qr" class="cert-qr"></div>
             <span class="cert-qr-label">Scan to verify</span>
@@ -62,7 +118,7 @@
 
         <div class="cert-footer">
           <div class="cert-footer-left">
-            <time class="cert-date" id="cert-date" datetime=""></time>
+            <time class="cert-date" id="cert-date" itemprop="dateCreated" datetime=""></time>
             <span class="cert-footer-label" id="cert-date-label"></span>
           </div>
           <div class="cert-footer-center">

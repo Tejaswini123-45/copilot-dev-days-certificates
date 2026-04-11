@@ -17,10 +17,11 @@ async function init() {
       validateConfig(config);
       validateAttendee(attendee);
       applyConfigVars(config);
-      if (config.site_title) {
-        document.title = config.site_title;
-      }
+      document.title = attendee.name + ' \u2014 ' + attendee.workshop + ' Certificate | ' + config.org_name;
       renderCertificateView(config, attendee, id);
+      wirePDFButton(config, attendee.certificate_id);
+      injectSEOTags(config, attendee);
+      injectJSONLD(config, attendee);
       showView('certificate-view');
     } else {
       // No id: show search view
@@ -30,6 +31,8 @@ async function init() {
       if (config.site_title) {
         document.title = config.site_title;
       }
+      renderSearchView(config);
+      injectOrgJSONLD(config);
       showView('search-view');
     }
   } catch (err) {
@@ -113,7 +116,15 @@ function renderCertificateView(config, attendee, id) {
   if (preNameEl) preNameEl.textContent = config.pre_name_text || '';
 
   var nameEl = document.getElementById('cert-name');
-  if (nameEl) nameEl.textContent = attendee.name;
+  if (nameEl) {
+    // Populate the itemprop="name" span inside h1 for microdata
+    var nameSpan = nameEl.querySelector('[itemprop="name"]');
+    if (nameSpan) {
+      nameSpan.textContent = attendee.name;
+    } else {
+      nameEl.textContent = attendee.name;
+    }
+  }
 
   var postNameEl = document.getElementById('cert-post-name-text');
   if (postNameEl) postNameEl.textContent = config.post_name_text || '';
@@ -192,11 +203,178 @@ function generateQR(config, id) {
   });
 }
 
-/**
- * Show the error view with an optional certificate-ID-specific message.
- * When id is falsy (config load failed), the hardcoded HTML message is preserved.
- * When id is truthy (certificate not found), updates #error-message and populates #error-detail.
- */
+// === PDF Download ===
+
+function wirePDFButton(config, certId) {
+  var btn = document.getElementById('download-btn');
+  if (!btn) return;
+
+  btn.addEventListener('click', function () {
+    if (typeof html2pdf === 'undefined') {
+      alert('PDF library is still loading. Please try again in a moment.');
+      return;
+    }
+    // Disable button during generation
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    var element = document.getElementById('certificate');
+    var noPrint = document.querySelectorAll('.no-print');
+    noPrint.forEach(function (el) { el.style.visibility = 'hidden'; });
+
+    var opt = {
+      margin:      config.pdf_margin != null ? config.pdf_margin : 0,
+      filename:    (config.pdf_filename_prefix || 'certificate') + '-' + certId + '.pdf',
+      image:       { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF:       {
+        unit:        'mm',
+        format:      config.pdf_format || 'a4',
+        orientation: config.pdf_orientation || 'landscape'
+      }
+    };
+
+    html2pdf().set(opt).from(element).save().then(function () {
+      noPrint.forEach(function (el) { el.style.visibility = 'visible'; });
+      btn.disabled = false;
+      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF';
+    });
+  });
+}
+
+// === Search View ===
+
+function renderSearchView(config) {
+  var logoEl = document.getElementById('search-logo');
+  if (logoEl) {
+    logoEl.src = config.logo_url || '';
+    logoEl.alt = config.org_name || '';
+    if (!config.logo_url) logoEl.style.display = 'none';
+    logoEl.onerror = function () { this.style.display = 'none'; };
+  }
+
+  var headlineEl = document.getElementById('search-headline');
+  if (headlineEl) headlineEl.textContent = config.search_headline || config.org_name || '';
+
+  var subtextEl = document.getElementById('search-subtext');
+  if (subtextEl) subtextEl.textContent = config.search_subtext || '';
+
+  var placeholderEl = document.getElementById('lookup-input');
+  if (placeholderEl) placeholderEl.placeholder = config.search_placeholder || 'your@email.com';
+
+  var btnEl = document.getElementById('lookup-btn');
+  if (btnEl) btnEl.textContent = config.search_button || 'Find My Certificate';
+
+  var noteEl = document.getElementById('search-footer-note');
+  if (noteEl) noteEl.textContent = config.search_footer_note || '';
+
+  // Wire search
+  if (btnEl) btnEl.addEventListener('click', handleSearch);
+  var inputEl = document.getElementById('lookup-input');
+  if (inputEl) inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleSearch();
+  });
+}
+
+function sanitizeEmail(email) {
+  return email
+    .toLowerCase()
+    .trim()
+    .replace(/\+/g, '-plus-')
+    .replace(/@/g, '-at-')
+    .replace(/\./g, '-')
+    .replace(/[^a-z0-9\-]/g, '');
+}
+
+function handleSearch() {
+  var input = document.getElementById('lookup-input');
+  if (!input) return;
+  var value = input.value.trim();
+  if (!value) {
+    input.focus();
+    return;
+  }
+  var id = value.indexOf('@') !== -1 ? sanitizeEmail(value) : sanitizeId(value);
+  window.location.href = '?id=' + encodeURIComponent(id);
+}
+
+// === SEO & Structured Data ===
+
+function injectSEOTags(config, attendee) {
+  var pageUrl     = window.location.href;
+  var title       = attendee.name + ' \u2014 ' + attendee.workshop + ' Certificate | ' + config.org_name;
+  var description = attendee.name + ' successfully completed \u201c' + attendee.workshop + '\u201d on ' + attendee.date + '. Issued by ' + config.org_name + '.';
+  var image       = config.og_image_url
+    ? new URL(config.og_image_url, window.location.origin).href
+    : (config.logo_url ? new URL(config.logo_url, window.location.origin).href : '');
+
+  var canonical = document.getElementById('canonical-tag');
+  if (canonical) canonical.setAttribute('href', pageUrl);
+
+  document.title = title;
+  var metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute('content', description);
+
+  setMetaContent('og-title',       title);
+  setMetaContent('og-description', description);
+  setMetaContent('og-url',         pageUrl);
+  setMetaContent('og-image',       image);
+  setMetaContent('og-site-name',   config.org_name || '');
+
+  setMetaContent('tw-title',       title);
+  setMetaContent('tw-description', description);
+  setMetaContent('tw-image',       image);
+  setMetaContent('tw-site',        config.twitter_handle || '');
+}
+
+function setMetaContent(id, value) {
+  var el = document.getElementById(id);
+  if (el) el.setAttribute('content', value);
+}
+
+function injectJSONLD(config, attendee) {
+  var schema = {
+    '@context': 'https://schema.org',
+    '@type':    'EducationalOccupationalCredential',
+    'name':     attendee.workshop + ' \u2014 Certificate of Completion',
+    'description': attendee.description || (attendee.name + ' completed ' + attendee.workshop + '.'),
+    'credentialCategory': 'Certificate of Completion',
+    'dateCreated':  attendee.date_iso,
+    'url':          window.location.href,
+    'identifier':   attendee.certificate_id,
+    'recognizedBy': {
+      '@type': 'Organization',
+      'name':  config.org_name,
+      'url':   config.org_website || '',
+      'logo':  config.logo_url ? new URL(config.logo_url, window.location.origin).href : ''
+    },
+    'about': {
+      '@type': 'Person',
+      'name':  attendee.name,
+      'email': attendee.email
+    }
+  };
+  var el = document.getElementById('json-ld-block');
+  if (el) el.textContent = JSON.stringify(schema, null, 2);
+}
+
+function injectOrgJSONLD(config) {
+  var schema = {
+    '@context':    'https://schema.org',
+    '@type':       'Organization',
+    'name':        config.org_name,
+    'url':         config.org_website || window.location.origin,
+    'description': config.org_tagline || ''
+  };
+  if (config.logo_url) {
+    schema.logo = new URL(config.logo_url, window.location.origin).href;
+  }
+  var el = document.getElementById('json-ld-block');
+  if (el) el.textContent = JSON.stringify(schema, null, 2);
+}
+
+// === Error View ===
+
 function showError(id) {
   var msgEl = document.getElementById('error-message');
   var detailEl = document.getElementById('error-detail');

@@ -102,13 +102,198 @@ body {
 }
 
 /* ========================================
+   SEARCH / LANDING PAGE
+   ======================================== */
+
+#search-view {
+  background: linear-gradient(160deg, var(--primary-color) 0%, #0b1824 100%);
+  padding: 40px 16px;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 48px 40px 40px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.search-logo {
+  max-height: 64px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.search-headline {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.search-subtext {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--muted-color);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.search-label {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-align: left;
+  letter-spacing: 0.03em;
+}
+
+.search-input {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-color);
+  background: #f8f7f4;
+  border: 1.5px solid rgba(26, 46, 74, 0.2);
+  border-radius: 6px;
+  padding: 12px 14px;
+  width: 100%;
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.search-input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(200, 169, 81, 0.18);
+}
+
+.search-input::placeholder {
+  color: var(--muted-color);
+  opacity: 0.7;
+}
+
+.search-btn {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  padding: 13px 20px;
+  width: 100%;
+  cursor: pointer;
+  transition: background 200ms ease, transform 150ms ease;
+}
+
+.search-btn:hover {
+  background: #223a5e;
+}
+
+.search-btn:active {
+  transform: scale(0.98);
+}
+
+.search-btn:focus-visible {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+.search-footer-note {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--muted-color);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ========================================
+   ACTION BAR (certificate view top)
+   ======================================== */
+
+.action-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  padding: 14px 16px;
+  width: 100%;
+  background: rgba(11, 24, 36, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 200ms ease, transform 150ms ease, box-shadow 200ms ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(200, 169, 81, 0.35);
+}
+
+.btn-primary:hover {
+  background: #d9bb62;
+  box-shadow: 0 4px 16px rgba(200, 169, 81, 0.45);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
    CERTIFICATE PAGE BACKDROP
    ======================================== */
 
 /* Premium dark backdrop makes the certificate card pop */
 #certificate-view {
   background: linear-gradient(160deg, var(--primary-color) 0%, #0b1824 100%);
-  padding: 24px 16px;
+  padding: 0 16px 24px;
   align-items: center;
 }
 
@@ -424,10 +609,17 @@ body {
     display: none !important;
   }
 
+  /* Hide action bar and any no-print elements */
+  .no-print {
+    display: none !important;
+  }
+
   #certificate-view {
     display: flex !important;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
   }
 
   .certificate-wrapper {
